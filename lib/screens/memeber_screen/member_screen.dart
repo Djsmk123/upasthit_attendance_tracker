@@ -9,6 +9,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:upasthit/components/rounded_button.dart';
 import 'package:upasthit/constants.dart';
 import 'package:upasthit/providers/attendance_provider.dart';
 
@@ -155,7 +156,6 @@ class _MemberScreenState extends State<MemberScreen> {
                   setState(() {
                     isScanning=true;
                   });
-
                 },
                 child:Column(
                   children: [
@@ -187,21 +187,16 @@ class _MemberScreenState extends State<MemberScreen> {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: GestureDetector(
-                                onTap: () async {
-                                  setState(() {
-                                    isScanned=false;
-                                  });
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 50,vertical: 10),
-                                  decoration: BoxDecoration(
-                                      color: kNewPrimaryColor,
-                                      borderRadius: BorderRadius.circular(16)
-                                  ),
-                                  child: const Text("Back"),
-                                )
-                            ),
+                            child: RoundedButton(
+                              text: "Back",
+                              color: Colors.grey,
+                              press: (){
+                                setState(() {
+                                  isScanned=false;
+                                  result=null;
+                                });
+                              },
+                            )
                           )
 
                         ],

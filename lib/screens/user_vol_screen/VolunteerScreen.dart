@@ -1,21 +1,21 @@
-// ignore_for_file: prefer_typing_uninitialized_variables
+// ignore_for_file: prefer_typing_uninitialized_variables, use_build_context_synchronously
 
 import 'dart:developer';
+import 'dart:ui' as ui;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:intl/intl.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:provider/provider.dart';
 import 'package:upasthit/Models/users_models.dart';
-import 'package:upasthit/components/CustomProgressIndicator.dart';
+import 'package:upasthit/components/FadeAnimation.dart';
 import 'package:upasthit/components/id_card.dart';
-import 'package:upasthit/constants.dart';
-import 'package:upasthit/models/attendance_model.dart';
+import 'package:upasthit/components/rounded_button.dart';
 import 'package:upasthit/providers/attendance_provider.dart';
 
-import '../../services/firebase_services.dart';
 import '../../services/logins_signup_services.dart';
 import '../attandance_builder.dart';
 import '../welcome_screen.dart';
@@ -29,7 +29,20 @@ class VolScreen extends StatefulWidget {
 
 class _VolScreenState extends State<VolScreen> {
   bool isLoading=true;
-
+  final GlobalKey _globalKey = GlobalKey();
+  Future<Uint8List?> capturePng() async {
+    try {
+      var boundary = _globalKey.currentContext!.findRenderObject()
+      as RenderRepaintBoundary;
+      ui.Image? image = await boundary.toImage(pixelRatio: 3.0);
+      ByteData? byteData =
+      await image.toByteData(format: ui.ImageByteFormat.png);
+      var pngBytes = byteData?.buffer.asUint8List();
+      return pngBytes;
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   initAsync()async {
     try{
@@ -54,7 +67,6 @@ class _VolScreenState extends State<VolScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    final List<AttendanceModel> attendanceModel=Provider.of<AttendanceProvider>(context).getAttendanceModel;
     final VolModel model=Provider.of<AttendanceProvider>(context).getVolModel;
     if (!isLoading) {
       return Scaffold(
@@ -96,9 +108,57 @@ class _VolScreenState extends State<VolScreen> {
         child:SingleChildScrollView(
           child: Column(
             children: [
-              IdCardWidget(model,context,true),
-              SizedBox(height: 20,),
-              AttendanceBuilder(id: FirebaseAuth.instance.currentUser!.uid,isMember:false)
+              RepaintBoundary(
+                  key: _globalKey,
+                  child: IdCardWidget(model,context,true)),
+              FadeAnimation(
+                1.2,
+                RoundedButton(text: "Download",
+                  press: () async {
+                  final bytes = await capturePng();
+                  showDialog(context: context, builder: (builder){
+                    return AlertDialog(
+                      title:const Text("Generated ID CARD"),
+                      content: Image.memory(bytes!),
+                      actionsAlignment: MainAxisAlignment.spaceBetween,
+                      actions: [
+                        GestureDetector(
+                          onTap: (){
+                            Navigator.pop(context);
+                          },
+                          child: const Text("Cancel",style: TextStyle(
+                              fontSize: 16
+                          ),),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            var msg="Successfully Downloaded";
+                            try{
+                              await ImageGallerySaver.saveImage(bytes,name: "qr_code_${model.info['name']}");
+                              Fluttertoast.showToast(msg: msg);
+                              Navigator.pop(context);
+                            }catch(e){
+                              msg="Something went wrong";
+                              Fluttertoast.showToast(msg: msg);
+                              log(e.toString());
+                            }
+
+
+
+                          },
+                          child: const Text("Save",style: TextStyle(
+                            fontSize: 16
+                          ),),
+                        )
+                      ],
+
+                    );
+                  });
+
+                },color: Colors.blueAccent,),
+              ),
+              const SizedBox(height: 20,),
+              AttendanceBuilder(id: FirebaseAuth.instance.currentUser!.uid,isMember:false),
 
             ],
           ),

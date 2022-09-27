@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:upasthit/constants.dart';
 import 'package:upasthit/screens/signup_screen.dart';
 
 import '../components/FadeAnimation.dart';
@@ -10,7 +11,7 @@ class ChoicePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
+
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
@@ -18,7 +19,8 @@ class ChoicePage extends StatelessWidget {
                 height: 400,
                 decoration: const BoxDecoration(
                     image: DecorationImage(
-                        image: AssetImage('assets/images/background.png'),
+                      colorFilter: ColorFilter.mode(kNewPrimaryColor, BlendMode.color),
+                        image: AssetImage('assets/images/background.png',),
                         fit: BoxFit.fill)),
                 child: Stack(
                   children: <Widget>[
@@ -31,7 +33,9 @@ class ChoicePage extends StatelessWidget {
                           Container(
                             decoration: const BoxDecoration(
                                 image: DecorationImage(
+                                    colorFilter: ColorFilter.linearToSrgbGamma(),
                                     image: AssetImage(
+
                                         'assets/images/light-1.png'))),
                           )),
                     ),
@@ -42,8 +46,11 @@ class ChoicePage extends StatelessWidget {
                       child: FadeAnimation(
                           1.3,
                           Container(
+
                             decoration: const BoxDecoration(
+
                                 image: DecorationImage(
+                                    colorFilter: ColorFilter.srgbToLinearGamma(),
                                     image: AssetImage(
                                         'assets/images/light-2.png'))),
                           )),
@@ -81,9 +88,11 @@ class ChoicePage extends StatelessWidget {
                   ],
                 ),
               ),
+              SizedBox(height: 100,),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     FadeAnimation(
                         1.8,
@@ -167,7 +176,8 @@ class ChoicePage extends StatelessWidget {
           height: 180,
           width: 100,
           decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.shade300),
+            color: Colors.white,
+              border: Border.all(color: Colors.white),
               borderRadius: BorderRadius.circular(8)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

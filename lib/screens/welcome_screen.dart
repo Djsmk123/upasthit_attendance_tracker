@@ -147,8 +147,7 @@ class _BodyState extends State<Body> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Image.asset("assets/images/appLogo.png",
-              width: !isWeb(size) ? size.width * 0.8 : 500, height: 150),
-          SizedBox(height: size.height * 0.05),
+              width: !isWeb(size) ? size.width * 0.8 : 500),
           if (isLoading != null)
             if (isLoading!)
               const Center(
@@ -159,6 +158,7 @@ class _BodyState extends State<Body> {
             if (!isLoading!)
               RoundedButton(
                 text: "LOGIN",
+                color: Colors.blueAccent,
                 press: () {
                   Navigator.push(context, MaterialPageRoute(builder: (builder)=>const LoginScreen()));
                 },
