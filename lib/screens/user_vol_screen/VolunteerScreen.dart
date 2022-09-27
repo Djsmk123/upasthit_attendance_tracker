@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:upasthit/Models/users_models.dart';
 import 'package:upasthit/components/CustomProgressIndicator.dart';
+import 'package:upasthit/components/id_card.dart';
 import 'package:upasthit/constants.dart';
 import 'package:upasthit/models/attendance_model.dart';
 import 'package:upasthit/providers/attendance_provider.dart';
@@ -95,6 +96,8 @@ class _VolScreenState extends State<VolScreen> {
         child:SingleChildScrollView(
           child: Column(
             children: [
+              IdCardWidget(model,context,true),
+              SizedBox(height: 20,),
               AttendanceBuilder(id: FirebaseAuth.instance.currentUser!.uid,isMember:false)
 
             ],

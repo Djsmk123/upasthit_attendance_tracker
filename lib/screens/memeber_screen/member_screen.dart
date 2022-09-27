@@ -13,6 +13,7 @@ import 'package:upasthit/constants.dart';
 import 'package:upasthit/providers/attendance_provider.dart';
 
 import '../../Models/users_models.dart';
+import '../../components/id_card.dart';
 import '../../models/attendance_model.dart';
 import '../../services/logins_signup_services.dart';
 import '../attandance_builder.dart';
@@ -50,7 +51,6 @@ class _MemberScreenState extends State<MemberScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
   }
   void readQr() async {
     if (result != null) {
@@ -77,15 +77,15 @@ class _MemberScreenState extends State<MemberScreen> {
   @override
 
   void dispose() {
-    //controller?.dispose();
+    controller?.dispose();
     super.dispose();
   }
   @override
   Widget build(BuildContext context) {
-    final List<AttendanceModel> attendanceModel=Provider.of<AttendanceProvider>(context).getAttendanceModel;
     final VolModel model=Provider.of<AttendanceProvider>(context).getVolModel;
-    if(isScanning)
+    if(isScanning) {
       readQr();
+    }
     return WillPopScope(
 
       onWillPop: ()async {
@@ -230,243 +230,4 @@ class MemberScreen extends StatefulWidget {
 }
 
 
-Widget IdCardWidget(VolModel model,context,bool isVol){
-  return Container
-    (
-    padding:const EdgeInsets.only(top: 20,bottom: 30,left: 10,right: 10),
-    width: 500,
-    child: Card
-      (
-      color: Colors.blueAccent,
 
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0),
-
-      ),
-
-      child: Column
-        (
-        children: <Widget>[
-
-          Container(
-            color: Colors.blue.shade900,
-            child: Row
-              (
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-
-                const Padding(
-
-                  padding: EdgeInsets.all(10),
-                  child: Text(
-                    "Teen of God",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25.0,
-
-                    ),
-
-                  ),
-                ),
-
-                Padding(
-                  padding: const EdgeInsets.only(top: 10,right: 10),
-                  child: InkWell
-                    (
-                    child: CircleAvatar(
-
-                      // radius: MediaQuery.of(context).size.width*0.1,
-                      backgroundColor: Colors.blueAccent,
-                      child: Image.asset("assets/images/volunteer-icon.png"),
-
-                    ),
-                  ),
-                ),
-
-              ],
-            ),
-
-          ),
-
-
-          Column(
-            children:<Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 100,right: 100,top: 20,bottom: 20),
-                child: InkWell
-                  (
-                  child: CircleAvatar(
-
-                    radius: MediaQuery.of(context).size.width*0.15,
-                    backgroundColor: Colors.blueAccent,
-                    child: Image.asset("assets/images/volunteer-icon.png"),
-
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right:75,left: 75),
-                child: Text(model.info['name'],
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 27,
-                    fontWeight:FontWeight.bold,
-                  ),
-
-                ),
-              ),
-              Row(
-
-                children: [
-
-                  const Padding(
-                    padding: EdgeInsets.only(left:75,top: 5),
-                    child: Text("Email",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-
-                    ),
-
-
-                  ),
-
-
-                  Padding(
-                    padding: const EdgeInsets.only(left: 7,top: 2),
-                    child: Text(model.info['em'],
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                      ),
-
-                    ),
-
-
-                  ),
-
-                ],
-
-              ),
-
-              Row(
-
-                children: [
-
-                  const Padding(
-                    padding: EdgeInsets.only(left:75,top: 5),
-                    child: Text("Phone No.",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-
-                    ),
-
-
-                  ),
-                  const SizedBox(width: 10,),
-
-                  Padding(
-                    padding: const EdgeInsets.only(left: 7,top: 2),
-                    child: Text(model.info['phno'],
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-
-                ],
-
-              ),
-
-
-
-
-              Row(
-
-                children: [
-
-                  const Padding(
-                    padding: EdgeInsets.only(left:75,top: 5),
-                    child: Text("Address",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-
-                    ),
-
-                  ),
-                  const SizedBox(width: 10,),
-
-                  Padding(
-                    padding: const EdgeInsets.only(left: 7,top: 2),
-                    child: Text(model.info['address'],
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-
-                ],
-
-              ),
-
-            ],
-          ),
-          if(isVol)
-          const Padding(
-                                    padding: EdgeInsets.only(top:15),
-                                    child: Text("Scan for Attendance",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.bold,
-
-                                      ),
-
-
-                                    ),
-                                  ),
-                                  if(isVol)
-                                  Container
-                                    (
-                                    padding: const EdgeInsets.only(top: 10),
-                                    child: LayoutBuilder(
-                                      builder: (context, constraints) {
-                                        return SizedBox(
-                                          child: QrImage(
-                                            data: FirebaseAuth.instance.currentUser!.uid,
-                                            version: QrVersions.auto,
-                                            size: 300.0,
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-          const SizedBox(height: 20,),
-
-        ],
-
-
-
-
-      ),
-
-
-
-
-
-
-
-    ),
-  );
-}
