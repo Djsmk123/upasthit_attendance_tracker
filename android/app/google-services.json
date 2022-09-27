@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "174701045341",
+    "project_id": "attendacetracker-98c35",
+    "storage_bucket": "attendacetracker-98c35.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:174701045341:android:a6ea904d77d479c22acfb4",
+        "android_client_info": {
+          "package_name": "com.flutterblaster.upasthit.upasthit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "174701045341-sa6619q41n0fkjbi3sap22khrclrba5c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCI9yjteK5_dHBDP3erji40h9NdAEYo6aE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "174701045341-sa6619q41n0fkjbi3sap22khrclrba5c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
