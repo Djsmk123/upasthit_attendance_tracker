@@ -84,6 +84,7 @@ class _MemberScreenState extends State<MemberScreen> {
   @override
   Widget build(BuildContext context) {
     final VolModel model=Provider.of<AttendanceProvider>(context).getVolModel;
+    print(isScanned);
     if(isScanning) {
       readQr();
     }
@@ -151,59 +152,62 @@ class _MemberScreenState extends State<MemberScreen> {
         ):SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              child: GestureDetector(
-                onTap: () async {
-                  setState(() {
-                    isScanning=true;
-                  });
-                },
-                child:Column(
-                  children: [
-                    if(!isScanned)
+              child: Column(
+                children: [
+
+                  Visibility(
+                    visible: !isScanned,
+                    child: GestureDetector(
+                      onTap: (){
+                        setState(() {
+                          isScanning=true;
+                        });
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.camera_alt,color: kPrimaryColor,size: 60,),
+                          SizedBox(height: 10,),
+                          Center(
+                            child: Text("Scan QR of the Volunteer attendance report",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20
+                            ),),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                    if(isScanned)
                     Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: const [
-                        Icon(Icons.camera_alt,color: kPrimaryColor,size: 60,),
-                        SizedBox(height: 10,),
-                        Center(
-                          child: Text("Scan QR of the Volunteer attendance report",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 20
-                          ),),
+                      children: [
+                        IdCardWidget(model,context,false),
+
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: AttendanceBuilder(id: result!.code!.toString(),isMember:true),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: RoundedButton(
+                            text: "Back",
+                            color: Colors.grey,
+                            press: (){
+                              setState(() {
+                                isScanned=false;
+                                result=null;
+                              });
+                            },
+                          )
                         )
+
                       ],
                     )
-                    else
-                      Column(
-                        children: [
-                          IdCardWidget(model,context,false),
 
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: AttendanceBuilder(id: result!.code!.toString(),isMember:true),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: RoundedButton(
-                              text: "Back",
-                              color: Colors.grey,
-                              press: (){
-                                setState(() {
-                                  isScanned=false;
-                                  result=null;
-                                });
-                              },
-                            )
-                          )
-
-                        ],
-                      )
-
-                  ],
-                )
+                ],
               ),
             ),
           ),

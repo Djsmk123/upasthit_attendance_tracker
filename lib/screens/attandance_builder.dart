@@ -39,7 +39,7 @@ class _AttendanceBuilderState extends State<AttendanceBuilder> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            //crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Divider(),
               const Text("Attendance Record",style: TextStyle(
@@ -50,6 +50,7 @@ class _AttendanceBuilderState extends State<AttendanceBuilder> {
               Card(
                 elevation: 10,
                 child:Column(
+
                   children: [
                     Table(
                         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
@@ -109,7 +110,7 @@ class _AttendanceBuilderState extends State<AttendanceBuilder> {
                                               {
                                                 return "Cant be empty";
                                               }
-                                              else if((value!='p' && value!='a' && value!='l'))
+                                              if((value.toLowerCase()!='p' && value.toLowerCase()!='a' && value.toLowerCase()!='l'))
                                               {
                                                 return "Not valid label";
                                               }
@@ -183,7 +184,7 @@ class _AttendanceBuilderState extends State<AttendanceBuilder> {
                                                         {
                                                           return "Cant be empty";
                                                         }
-                                                        else if((value.toLowerCase()=='p' && value.toLowerCase()!='a' && value.toLowerCase()!='l'))
+                                                        else if((value.toLowerCase()!='p' && value.toLowerCase()!='a' && value.toLowerCase()!='l'))
                                                         {
                                                           return "Not valid label";
                                                         }
@@ -282,7 +283,7 @@ class _AttendanceBuilderState extends State<AttendanceBuilder> {
               ),
               const SizedBox(height: 10,),
               if(widget.isMember)
-             RoundedButton(text: "Update",
+               RoundedButton(text: "Update",
                  color: Colors.blueAccent,
                  press: () async {
                if(key.currentState!.validate())
