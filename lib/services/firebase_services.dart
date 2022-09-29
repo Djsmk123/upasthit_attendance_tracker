@@ -24,4 +24,11 @@ class FirebaseService{
     }
 
   }
+
+  static get getAllMemberAttendance async {
+    var doc=await collection.userData.get();
+    return doc.docs;
+  }
+
+
 }

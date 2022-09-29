@@ -1,11 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:upasthit/providers/admin_provider.dart';
 import 'package:upasthit/providers/attendance_provider.dart';
 import 'package:upasthit/providers/form_error.dart';
 import 'package:upasthit/screens/forns/user_form.dart';
 import 'package:upasthit/screens/welcome_screen.dart';
 
+import 'components/transcation_screen.dart';
 import 'firebase_options.dart';
 import 'models/collection.dart';
 
@@ -26,7 +28,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_)=>FormErrorModel()),
-        ChangeNotifierProvider(create: (_)=>AttendanceProvider())
+        ChangeNotifierProvider(create: (_)=>AttendanceProvider()),
+        ChangeNotifierProvider(create: (_)=>AdminProvider())
       ],
       child: MaterialApp(
           theme: ThemeData(useMaterial3: true,

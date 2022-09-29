@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:pie_chart/pie_chart.dart';
 import 'package:provider/provider.dart';
 import 'package:upasthit/components/FadeAnimation.dart';
 import 'package:upasthit/components/rounded_button.dart';
@@ -25,14 +26,44 @@ class AttendanceBuilder extends StatefulWidget {
 }
 
 class _AttendanceBuilderState extends State<AttendanceBuilder> {
-  var f = DateFormat('yyyy-MM-dd hh:mm a');
+  var f = DateFormat('yyyy-MM-dd');
   final GlobalKey<FormState> key=GlobalKey<FormState>();
   bool isEdit=false;
   bool isLoading=false;
   @override
   Widget build(BuildContext context) {
     final List<AttendanceModel> attendanceModel=Provider.of<AttendanceProvider>(context).getAttendanceModel;
-    return !isLoading?FadeAnimation(
+    Map<String,dynamic> views={
+      'Total':attendanceModel.length,
+      'Percentage':0,
+      'LastAppear':attendanceModel.isNotEmpty?f.format(attendanceModel.last.date!.toDate()):"",
+    };
+    Map<String,double> data={
+      'Present':0,
+      'Absent':0,
+      'Leave':0,
+
+    };
+    for(var i in attendanceModel)
+      {
+        if(i.status!.toLowerCase()=='p')
+          {
+            data['Present']=data['Present']!+1;
+          }
+        if(i.status!.toLowerCase()=='l')
+        {
+          data['Leave']=data['Leave']!+1;
+        }
+        if(i.status!.toLowerCase()=='a')
+          {
+            data['Absent']=data['Absent']!+1;
+          }
+      }
+    if(attendanceModel.isNotEmpty) {
+      views['Percentage']=(data['Present']!*100/views['Total']).toStringAsFixed(2);
+    }
+    if (!isLoading) {
+      return FadeAnimation(
       1.5,
       Form(
         key: key,
@@ -47,10 +78,97 @@ class _AttendanceBuilderState extends State<AttendanceBuilder> {
                 fontWeight: FontWeight.bold
               ),),
               const Divider(),
+              Card(elevation: 10,child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      height: 200,
+                      child: PieChart(
+                        dataMap: data,
+                        animationDuration: const Duration(milliseconds: 800),
+                        colorList: const [Colors.green,Colors.red,Colors.yellow],
+                        initialAngleInDegree: 0,
+                        chartType: ChartType.ring,
+                        totalValue: views['Total'],
+                        centerText:"Total:${views['Total']}",
+                        legendOptions: const LegendOptions(
+                          showLegendsInRow: false,
+                          legendPosition: LegendPosition.right,
+                          showLegends: true,
+                          legendShape: BoxShape.circle,
+                          legendTextStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        chartValuesOptions: const ChartValuesOptions(
+                          showChartValueBackground: true,
+                          showChartValues: true,
+                          showChartValuesInPercentage: true,
+                          showChartValuesOutside: false,
+                          decimalPlaces: 2,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("Present: ${data['Present']}",style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold
+                        ),),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("Absent: ${data['Absent']}",style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold
+                        ),),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("Leave: ${data['Leave']}",style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold
+                        ),),
+                      ),
+
+
+
+                    ],
+                  ),
+                  const SizedBox(height: 20,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("Percentage: ${views['Percentage']}",style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold
+                        ),),
+                      ),
+
+
+
+
+
+                    ],
+                  )
+
+                ],
+              ),),
               Card(
                 elevation: 10,
                 child:Column(
-
                   children: [
                     Table(
                         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
@@ -282,6 +400,7 @@ class _AttendanceBuilderState extends State<AttendanceBuilder> {
                 ),
               ),
               const SizedBox(height: 10,),
+
               if(widget.isMember)
                RoundedButton(text: "Update",
                  color: Colors.blueAccent,
@@ -308,9 +427,12 @@ class _AttendanceBuilderState extends State<AttendanceBuilder> {
           ),
         ),
       ),
-    ):const CircularProgressIndicator(
+    );
+    } else {
+      return const CircularProgressIndicator(
       color: kNewPrimaryColor,
     );
+    }
   }
 }
 

@@ -29,6 +29,13 @@
             {
               "client_id": "174701045341-sa6619q41n0fkjbi3sap22khrclrba5c.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "174701045341-6ilat49469s4p8rs31vka22sv9tmbgk6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.flutterblaster.upasthit.upasthit"
+              }
             }
           ]
         }
