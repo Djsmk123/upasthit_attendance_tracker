@@ -15,6 +15,12 @@ On the behalf their roles App will run in that flow.
    ```
   Flutter build apk --release
   ```
+ - Run following command to build web
+ 
+  ```
+  Flutter build web --release
+  
+  ```
 
 # OUTPUT
 
