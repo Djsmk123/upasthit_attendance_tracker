@@ -33,6 +33,7 @@ class _AttendanceBuilderState extends State<AttendanceBuilder> {
   @override
   Widget build(BuildContext context) {
     final List<AttendanceModel> attendanceModel=Provider.of<AttendanceProvider>(context).getAttendanceModel;
+    var size=MediaQuery.of(context).size;
     Map<String,dynamic> views={
       'Total':attendanceModel.length,
       'Percentage':0,
@@ -91,7 +92,7 @@ class _AttendanceBuilderState extends State<AttendanceBuilder> {
                         colorList: const [Colors.green,Colors.red,Colors.yellow],
                         initialAngleInDegree: 0,
                         chartType: ChartType.ring,
-                        totalValue: views['Total'],
+                        totalValue: views['Total']!+0.0,
                         centerText:"Total:${views['Total']}",
                         legendOptions: const LegendOptions(
                           showLegendsInRow: false,
@@ -117,25 +118,25 @@ class _AttendanceBuilderState extends State<AttendanceBuilder> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text("Present: ${data['Present']}",style: const TextStyle(
+                        child: Text("Present: ${data['Present']}",style:  TextStyle(
                           color: Colors.black,
-                          fontSize: 20,
+                          fontSize: isWeb(size)?20:14,
                           fontWeight: FontWeight.bold
                         ),),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text("Absent: ${data['Absent']}",style: const TextStyle(
+                        child: Text("Absent: ${data['Absent']}",style:  TextStyle(
                             color: Colors.black,
-                            fontSize: 20,
+                            fontSize: isWeb(size)?20:14,
                             fontWeight: FontWeight.bold
                         ),),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text("Leave: ${data['Leave']}",style: const TextStyle(
+                        child: Text("Leave: ${data['Leave']}",style:  TextStyle(
                             color: Colors.black,
-                            fontSize: 20,
+                            fontSize: isWeb(size)?20:14,
                             fontWeight: FontWeight.bold
                         ),),
                       ),
@@ -371,7 +372,8 @@ class _AttendanceBuilderState extends State<AttendanceBuilder> {
                                                 if(form.currentState!.validate()){
 
                                                   try{
-                                                    Provider.of<AttendanceProvider>(context,listen: false).addAttendance(date: Timestamp.fromDate(dt!),status: status);
+                                                    var date=Timestamp.fromDate(dt!);
+                                                    Provider.of<AttendanceProvider>(context,listen: false).addAttendance(date: date,status: status);
                                                     Navigator.pop(context);
                                                   }catch(e){
                                                     Fluttertoast.showToast(msg: "Something went wrong");

@@ -5,12 +5,9 @@ import 'package:provider/provider.dart';
 import 'package:upasthit/providers/admin_provider.dart';
 import 'package:upasthit/providers/attendance_provider.dart';
 import 'package:upasthit/providers/form_error.dart';
-import 'package:upasthit/screens/forms/user_form.dart';
 import 'package:upasthit/screens/welcome_screen.dart';
 
-import 'components/transcation_screen.dart';
 import 'firebase_options.dart';
-import 'models/collection.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();

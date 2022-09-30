@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -35,7 +37,7 @@ class _AdminScreenState extends State<AdminScreen> {
       await Provider.of<AdminProvider>(context,listen: false).fetchMembersData;
       await Provider.of<AdminProvider>(context,listen: false).fetchVolunteerData();
     }catch(e){
-      print(e.toString());
+      log(e.toString());
     }
     finally{
       Provider.of<AdminProvider>(context,listen:false).setLoading=false;
@@ -84,6 +86,8 @@ class _AdminScreenState extends State<AdminScreen> {
                             }).catchError((error) {
                               Fluttertoast.showToast(msg: error.toString());
                             });
+                            Provider.of<AdminProvider>(context,listen: false).setLoading=false;
+
                           }, icon: Icon(Icons.logout,size: isWeb(size)?40:20,color: Colors.white,))
                         ],
                       ),
@@ -311,7 +315,7 @@ class _AdminScreenState extends State<AdminScreen> {
                         await AdminServices.rejectReq(id: mid);
                         await Provider.of<AdminProvider>(context,listen: false).fetchMembersData;
                       }catch(e){
-                        print(e.toString());
+                        log(e.toString());
                         Fluttertoast.showToast(msg: "Something went wrong");
                       }finally{
                         Provider.of<AdminProvider>(context,listen: false).setLoading=false;
@@ -340,7 +344,7 @@ class _AdminScreenState extends State<AdminScreen> {
                         await AdminServices.acceptReq(id: mid);
                         await Provider.of<AdminProvider>(context,listen: false).fetchMembersData;
                       }catch(e){
-                        print(e.toString());
+                        log(e.toString());
                         Fluttertoast.showToast(msg: "Something went wrong");
                       }finally{
                         Provider.of<AdminProvider>(context,listen: false).setLoading=false;

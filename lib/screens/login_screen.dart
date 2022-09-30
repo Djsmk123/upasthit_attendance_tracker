@@ -255,7 +255,6 @@ class _LoginScreenState extends State<LoginScreen> {
             }
             else
             {
-              print('heer');
               switch(role)
               {
                 case 'v': {

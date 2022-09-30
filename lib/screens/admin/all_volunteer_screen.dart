@@ -115,7 +115,7 @@ class _AllVounteerScreenState extends State<AllVounteerScreen> {
                                             att.add(AttendanceModel.fromJson(i));
                                           }
                                           Provider.of<AttendanceProvider>(context,listen: false).attendanceModel.addAll(att);
-                                          Navigator.push(context, MaterialPageRoute(builder: (builder)=>AttendanceViewScreen(id: item.uid)));
+                                          Navigator.push(context, MaterialPageRoute(builder: (builder)=>AttendanceViewScreen(id: item.uid,isMember: true,)));
                                         },
                                         child: Container(
                                           decoration: BoxDecoration(

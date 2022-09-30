@@ -38,7 +38,7 @@ Widget IdCardWidget(VolModel model,context,bool isVol){
 
                     padding: EdgeInsets.all(10),
                     child: Text(
-                      "Teen of God",
+                      "Teens of God",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 25.0,

@@ -5,7 +5,8 @@ import 'attandance_builder.dart';
 
 class AttendanceViewScreen extends StatefulWidget {
   final String id;
-  const AttendanceViewScreen({Key? key, required this.id}) : super(key: key);
+  final bool isMember;
+  const AttendanceViewScreen({Key? key, required this.id, required this.isMember}) : super(key: key);
 
   @override
   State<AttendanceViewScreen> createState() => _AttendanceViewScreenState();
@@ -23,8 +24,9 @@ class _AttendanceViewScreenState extends State<AttendanceViewScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: AttendanceBuilder(id: widget.id,isMember:true),
+              child: AttendanceBuilder(id: widget.id,isMember:widget.isMember),
             ),
+            if(widget.isMember)
             Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: RoundedButton(

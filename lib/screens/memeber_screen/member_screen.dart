@@ -1,7 +1,8 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
 
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,7 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:upasthit/components/rounded_button.dart';
 import 'package:upasthit/constants.dart';
 import 'package:upasthit/providers/attendance_provider.dart';
+import 'package:upasthit/services/firebase_services.dart';
 
 import '../../Models/users_models.dart';
 import '../../components/id_card.dart';
@@ -44,10 +46,28 @@ class _MemberScreenState extends State<MemberScreen> {
   }
   bool isScanned=false;
   bool isScanning=false;
+  bool isApproved=false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    initAsync();
+
+  }
+  Future<void> initAsync() async {
+    try{
+      setState(() {
+        isLoading=true;
+      });
+      isApproved= await FirebaseService.isApproved(uid: FirebaseAuth.instance.currentUser!.uid);
+
+    }catch(e){
+      log(e.toString());
+    }finally{
+      setState(() {
+        isLoading=false;
+      });
+    }
   }
   void readQr() async {
     if (result != null) {
@@ -102,18 +122,23 @@ class _MemberScreenState extends State<MemberScreen> {
         appBar: AppBar(
           actions: [
             IconButton(
-                onPressed: () {
-                  Authentication().logOut().then((value) {
-                    setState((){
-                      isLoading=true;
-                    });
+                onPressed: () async {
+                  setState(() {
+                    isLoading=true;
+                  });
+                  try{
+                    await Authentication().logOut();
                     Navigator.pop(context);
                     Navigator.popUntil(context, (route) => false);
                     Navigator.push(
                         context, MaterialPageRoute(builder: (builder)=>const WelcomeScreen()));
-                  }).catchError((error) {
-                    Fluttertoast.showToast(msg: error.toString());
-                  });
+                  }catch(e){
+                    log(e.toString());
+                    Fluttertoast.showToast(msg: "Something went wrong");
+                    setState(() {
+                      isLoading=false;
+                    });
+                  }
                 },
                 icon: const Icon(
                   Icons.logout,
@@ -150,9 +175,8 @@ class _MemberScreenState extends State<MemberScreen> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-
                   Visibility(
-                    visible: !isScanned,
+                    visible: !isScanned && isApproved,
                     child: GestureDetector(
                       onTap: (){
                         setState(() {
@@ -177,7 +201,7 @@ class _MemberScreenState extends State<MemberScreen> {
                       ),
                     ),
                   ),
-                    if(isScanned)
+                    if(isScanned && isApproved)
                     Column(
                       children: [
                         IdCardWidget(model,context,false),
@@ -201,6 +225,13 @@ class _MemberScreenState extends State<MemberScreen> {
                         )
 
                       ],
+                    ),
+                  if(!isApproved)
+                    const Center(
+                      child:  Text("Your Account has not been Approved yet.\nPlease wait until approve",textAlign: TextAlign.center,style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20
+                      ),),
                     )
 
                 ],

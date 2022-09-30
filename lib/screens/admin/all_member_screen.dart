@@ -39,80 +39,81 @@ class _AllMemberScreenState extends State<AllMemberScreen> {
                 itemCount: memberCards.length,
                 itemBuilder: (itemBuilder,index){
                   var item=memberCards[index];
-                  return Column(
-                    children: [
-                      SizedBox(
-                        width: 350,
-                        height: 280,
-                        child: Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                              color: Colors.blueAccent.shade700,
-                              borderRadius: BorderRadius.circular(16)
-                          ),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  itemBuilderCol(item.info['name'],Icons.person,),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      const Text("Approved", style: TextStyle(fontSize: 20,color: Colors.white),),
-                                      Transform.scale(
-                                          scale: 1,
-                                          child: Switch(
-                                            onChanged: (value) async {
-                                              setState(() {
-                                                isLoading=true;
-                                              });
-                                             try{
-                                               if (kDebugMode) {
-                                                 print('here');
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: 350,
+                          height: 280,
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                                color: Colors.blueAccent.shade700,
+                                borderRadius: BorderRadius.circular(16)
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    itemBuilderCol(item.info['name'],Icons.person,),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        const Text("Approved", style: TextStyle(fontSize: 20,color: Colors.white),),
+                                        Transform.scale(
+                                            scale: 1,
+                                            child: Switch(
+                                              onChanged: (value) async {
+                                                setState(() {
+                                                  isLoading=true;
+                                                });
+                                               try{
+                                                 if (kDebugMode) {
+                                                   print('here');
+                                                 }
+                                                 if(value)
+                                                 {
+                                                   await AdminServices.acceptReq(id: item.uid);
+                                                 }
+                                                 else{
+                                                   await AdminServices.rejectReq(id: item.uid);
+
+                                                 }
+                                                 await Provider.of<AdminProvider>(context,listen: false).fetchMembersData;
+                                               }catch(e){
+                                                 log(e.toString());
+                                                 Fluttertoast.showToast(msg: "Something went wrong");
+                                               }finally{
+                                                 setState(() {
+                                                   isLoading=false;
+                                                 });
                                                }
-                                               if(value)
-                                               {
-                                                 await AdminServices.acceptReq(id: item.uid);
-                                               }
-                                               else{
-                                                 await AdminServices.rejectReq(id: item.uid);
+                                              },
+                                              value: item.status??false,
+                                              activeColor: Colors.blue,
+                                              activeTrackColor: Colors.yellow,
+                                              inactiveThumbColor: Colors.redAccent,
+                                              inactiveTrackColor: Colors.orange,
+                                            )
+                                        ),
 
-                                               }
-                                               await Provider.of<AdminProvider>(context,listen: false).fetchMembersData;
-                                             }catch(e){
-                                               log(e.toString());
-                                               Fluttertoast.showToast(msg: "Something went wrong");
-                                             }finally{
-                                               setState(() {
-                                                 isLoading=false;
-                                               });
-                                             }
-                                            },
-                                            value: item.status??false,
-                                            activeColor: Colors.blue,
-                                            activeTrackColor: Colors.yellow,
-                                            inactiveThumbColor: Colors.redAccent,
-                                            inactiveTrackColor: Colors.orange,
-                                          )
-                                      ),
-
-                                    ],
-                                  ),
-                                ],
-                              ),
-
-                              itemBuilderCol(DateFormat("dd-MM-yyyy").format((item.info['date'] as Timestamp).toDate()),Icons.date_range),
-                              itemBuilderCol(item.info['em'],Icons.email,),
-                              itemBuilderCol(item.info['phno']??"Not Available",Icons.phone,),
-                              itemBuilderCol(item.info['address']??"Not Available",Icons.location_city_outlined,),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                itemBuilderCol(item.info['em'],Icons.email,),
+                                itemBuilderCol(item.info['phno']??"Not Available",Icons.phone,),
+                                itemBuilderCol(item.info['address']??"Not Available",Icons.location_city_outlined,),
 
 
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   );
                 }
 

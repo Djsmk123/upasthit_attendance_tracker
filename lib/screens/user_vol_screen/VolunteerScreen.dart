@@ -16,10 +16,12 @@ import 'package:upasthit/components/id_card.dart';
 import 'package:upasthit/components/rounded_button.dart';
 import 'package:upasthit/providers/attendance_provider.dart';
 import 'package:upasthit/screens/attendace_components/attandance_builder.dart';
+import 'package:upasthit/screens/attendace_components/attendance_view_screen.dart';
 
 import '../../services/logins_signup_services.dart';
 
 import '../welcome_screen.dart';
+import 'donation_screen.dart';
 
 class VolScreen extends StatefulWidget {
   const VolScreen({Key? key}) : super(key: key);
@@ -73,24 +75,14 @@ class _VolScreenState extends State<VolScreen> {
       return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(
+          Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.menu),
               onPressed: () {
-                Authentication().logOut().then((value) {
-                  setState((){
-                    isLoading=true;
-                  });
-                  Navigator.pop(context);
-                  Navigator.popUntil(context, (route) => false);
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (builder)=>const WelcomeScreen()));
-                }).catchError((error) {
-                  Fluttertoast.showToast(msg: error.toString());
-                });
+                Scaffold.of(context).openEndDrawer();
               },
-              icon: const Icon(
-                Icons.logout,
-                size: 30,
-              ))
+            ),
+          )
         ],
         leading:const Padding(
           padding:  EdgeInsets.all(8.0),
@@ -104,6 +96,55 @@ class _VolScreenState extends State<VolScreen> {
         title: Text(
             "HI,${model.info['name']}",
       ),
+      ),
+      endDrawer: Drawer(
+        child: Column(
+          children:  [
+            const SizedBox(height: 50,),
+            const CircleAvatar(
+              radius: 50,
+              backgroundImage: AssetImage("assets/images/volunteer-icon.png"),
+            ),
+            const SizedBox(height: 10,),
+             Center(
+              child: Text(model.info['name'],style: const TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),),
+            ),
+            const Divider(
+              thickness: 2,
+              height: 20,
+            ),
+            drawerTile(Icons.event_note_sharp,"Attendance Record",(){
+              Navigator.pop(context);
+              Navigator.popUntil(context, (route) => route.isFirst);
+              Navigator.push(context, MaterialPageRoute(builder: (builder)=>AttendanceViewScreen(id: FirebaseAuth.instance.currentUser!.uid, isMember: false)));
+            }),
+            drawerTile(Icons.receipt,"Donation Record",(){
+              Navigator.pop(context);
+              Navigator.popUntil(context, (route) => route.isFirst);
+              Navigator.push(context, MaterialPageRoute(builder: (builder)=>DonationScreen()));
+            }),
+            drawerTile(Icons.logout, "Logout", () async {
+              setState((){
+                isLoading=true;
+              });
+              try{
+                await Authentication().logOut();
+                Navigator.pop(context);
+                Navigator.popUntil(context, (route) => false);
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (builder)=>const WelcomeScreen()));
+              }catch(e){
+                Fluttertoast.showToast(msg: "Something went wrong");
+                setState((){
+                  isLoading=false;
+                });
+              }
+            })
+          ],
+        ),
       ),
       body: Center(
         child:SingleChildScrollView(
@@ -158,9 +199,7 @@ class _VolScreenState extends State<VolScreen> {
 
                 },color: Colors.blueAccent,),
               ),
-              const SizedBox(height: 20,),
-              AttendanceBuilder(id: FirebaseAuth.instance.currentUser!.uid,isMember:false),
-
+              const SizedBox(height: 20,)
             ],
           ),
         )
@@ -173,6 +212,26 @@ class _VolScreenState extends State<VolScreen> {
       ),
     );
     }
+  }
+  Widget drawerTile(IconData icn,String txt,GestureTapCallback onTap){
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Row(
+          children: [
+            Flexible(child: ListTile(
+            leading: Icon(icn),
+            horizontalTitleGap: 5,
+            title: Text(txt,style: const TextStyle(
+             color: Colors.black,
+              fontSize:  20
+        ),),
+        ))
+          ],
+        ),
+      ),
+    );
   }
 }
 

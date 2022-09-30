@@ -9,12 +9,19 @@ import '../services/firebase_services.dart';
 class AttendanceProvider with ChangeNotifier{
   List<AttendanceModel> attendanceModel=[];
   get getAttendanceModel=>attendanceModel;
+  List donations=[];
   VolModel model=VolModel();
   get getVolModel=>model;
+  get getDonations=>donations;
   update(uid) async {
     var doc=await FirebaseService.getVolunteerData(uid: uid);
     model.info=doc.get('info');
     List db=doc.get('attendance');
+    donations=doc.get('donations');
+    if(donations.isNotEmpty)
+      {
+        donations.sort((a,b)=>a['Date'].compareTo(b['Date']));
+      }
     attendanceModel.clear();
     for (var element in db) {
       attendanceModel.add(AttendanceModel.fromJson(element));
