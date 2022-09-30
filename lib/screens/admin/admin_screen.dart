@@ -1,21 +1,17 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:developer';
-import 'dart:math';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:upasthit/components/CustomProgressIndicator.dart';
 import 'package:upasthit/constants.dart';
-import 'package:upasthit/models/collection.dart';
+import 'package:upasthit/screens/admin/all_member_screen.dart';
 import 'package:upasthit/screens/welcome_screen.dart';
 import 'package:upasthit/services/admin_services.dart';
 
-import '../providers/admin_provider.dart';
-import '../services/logins_signup_services.dart';
+import '../../providers/admin_provider.dart';
+import '../../services/logins_signup_services.dart';
 import 'all_volunteer_screen.dart';
 
 class AdminScreen extends StatefulWidget {
@@ -26,65 +22,18 @@ class AdminScreen extends StatefulWidget {
 }
 
 class _AdminScreenState extends State<AdminScreen> {
-  List<Widget> nonApproveMembersRequests=[];
-  List<VolunteerCard> volunteerCards=[];
-  List<MemberCard> memberCards=[];
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     initAsync();
-    //marks();
-    addDonation();
-
   }
-  // marks attendance
 
- /* void marks()async{
-    var lst=["P","A","L"];
-    List<Map<String,dynamic>> att=[];
-    for(int i=1; i<=30; i++)
-      { lst.shuffle();
-        att.add({
-          'status':lst[0],
-          'Date':Timestamp.fromDate(DateTime(2022,08,i))
-        });
-      }
-    await Collections().userData.doc('0E1f7Ln5mUYtOlXZDd2Y37Ble2m1').update({
-      'attendance':att
-    });
-  }*/
-  addDonation() async {
-    List<Map<String,dynamic>> donations=[];
-    for(int i=0; i<20; i++)
-    {  var r = Random();
-    const chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-    String transactionId=List.generate(8, (index) => chars[r.nextInt(chars.length)]).join();
-    donations.add({
-      'Amount':r.nextInt(2000),
-      'Date':Timestamp.fromDate(DateTime(2022,08,i)),
-      'transactionId':transactionId,
-      'To':'Teen of God-NGO',
-      'Customer Name':'Md Mobin'
-    });
-    }
-    await Collections().userData.doc("0E1f7Ln5mUYtOlXZDd2Y37Ble2m1").update({
-      'donations':donations
-    });
-
-
-  }
   void initAsync()async{
     try{
-      await Provider.of<AdminProvider>(context,listen: false).setMemberData;
+      await Provider.of<AdminProvider>(context,listen: false).fetchMembersData;
       await Provider.of<AdminProvider>(context,listen: false).fetchVolunteerData();
-      var volsData=Provider.of<AdminProvider>(context,listen: false).getVolunteerData;
-      getVolData(volsData);
-      getMemberData(Provider.of<AdminProvider>(context,listen: false).getMemberData);
-      getNonApprove;
-      setState(() {
-
-      });
     }catch(e){
       print(e.toString());
     }
@@ -99,160 +48,153 @@ class _AdminScreenState extends State<AdminScreen> {
   Widget build(BuildContext context) {
     var size=MediaQuery.of(context).size;
     bool isLoading=Provider.of<AdminProvider>(context).getLoadingStatus;
+    var volunteerCards=Provider.of<AdminProvider>(context).getVolunteers;
+    var memberCards=Provider.of<AdminProvider>(context).getMembers;
+    List<MemberCard> nonApprovedMember=Provider.of<AdminProvider>(context).getNonApprovedMember;
+
     return Scaffold(
       body: !isLoading?SafeArea(
-        child: Column(
-          children: [
-            Container(
-              height:nonApproveMembersRequests.isNotEmpty?400:150,
-              decoration: BoxDecoration(
-                color: Colors.blue.shade700,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                    Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Admin Dashboard",style: TextStyle(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                height:nonApprovedMember.isNotEmpty?400:150,
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade700,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                      Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Admin Dashboard",style: TextStyle(
+                            color: Colors.white,
+                            fontSize: isWeb(size)?40:20,
+                            fontWeight: FontWeight.bold,
+                          ),),
+                          IconButton(onPressed: () async {
+                            Provider.of<AdminProvider>(context,listen: false).setLoading=true;
+                            await Authentication().logOut().then((value) {
+                              Navigator.popUntil(context, (route) => false);
+                              Navigator.push(
+                                  context,  MaterialPageRoute(builder: (builder)=>const WelcomeScreen()));
+                            }).catchError((error) {
+                              Fluttertoast.showToast(msg: error.toString());
+                            });
+                          }, icon: Icon(Icons.logout,size: isWeb(size)?40:20,color: Colors.white,))
+                        ],
+                      ),
+                    ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child:  Text(nonApprovedMember.isEmpty?"No pending requests for members registrations":"${nonApprovedMember.length} members need approval",style: const TextStyle(
                           color: Colors.white,
-                          fontSize: isWeb(size)?40:20,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+
                         ),),
-                        IconButton(onPressed: () async {
-                          Provider.of<AdminProvider>(context,listen: false).setLoading=true;
-                          await Authentication().logOut().then((value) {
-                            Navigator.popUntil(context, (route) => false);
-                            Navigator.push(
-                                context,  MaterialPageRoute(builder: (builder)=>const WelcomeScreen()));
-                          }).catchError((error) {
-                            Fluttertoast.showToast(msg: error.toString());
-                          });
-                        }, icon: Icon(Icons.logout,size: isWeb(size)?40:20,color: Colors.white,))
-                      ],
-                    ),
-                  ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child:  Text(nonApproveMembersRequests.isEmpty?"No pending requests for members registrations":"${nonApproveMembersRequests.length} members need approval",style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-
-                      ),),
-                    ),
-                  if(nonApproveMembersRequests.isNotEmpty)
-                  Center(
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 20),
-                      constraints: const BoxConstraints(
-                        maxHeight: 220,
-                        maxWidth: 400,
                       ),
-                      alignment: Alignment.center,
-                      child: PageView(
-                        controller:
-                        PageController(viewportFraction: 0.9),
-                        scrollDirection: Axis.horizontal,
-                        pageSnapping: true,
-                        children:nonApproveMembersRequests,
+                    if(nonApprovedMember.isNotEmpty)
+                    Center(
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 20),
+                        constraints: const BoxConstraints(
+                          maxHeight: 220,
+                          maxWidth: 400,
+                        ),
+                        alignment: Alignment.center,
+                        child: SingleChildScrollView(
+                          controller: PageController(viewportFraction: 0.9),
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                              children:nonApprovedMember.map((e) =>buildRequestsCard(title: e.info['name'], text: e.info['em'], mid: e.uid)).toList()
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20,),
-            Center(
-              child: SizedBox(
-                height: 250,
-                width: isWeb(size) ? 500 : 1000,
-                child: PageView(
-                  controller: PageController(
-                      viewportFraction: 1, initialPage: 1),
-                  scrollDirection: Axis.horizontal,
-                  pageSnapping: false,
-                  children: <Widget>[
-                    buildItemCard(
-                        title: "Volunteer Status",
-                        total: "Total:${volunteerCards.length}",
-                        color: Colors.blue,
-                        icon:Icons.volunteer_activism,
-                        onTap: () async {
-                          Navigator.push(context,MaterialPageRoute(builder: (builder)=>AllVounteerScreen(volunteers:volunteerCards,)));
-                        }),
                   ],
                 ),
               ),
-            ),
-            Center(
-              child: SizedBox(
-                height: 250,
-                width: isWeb(size) ? 500 : 1000,
-                child: PageView(
-                  controller: PageController(
-                      viewportFraction: 1, initialPage: 1),
-                  scrollDirection: Axis.horizontal,
-                  pageSnapping: false,
-                  children: <Widget>[
-                    buildItemCard(
-                        title: "Members Status",
-                        total: "Total:${memberCards.length}",
-                        color: Colors.blue,
-                        icon:Icons.wallet_membership,
-                        onTap: () async {
-                        }),
-                  ],
+              const SizedBox(height: 20,),
+              Center(
+                child: SizedBox(
+                  height: 250,
+                  width: isWeb(size) ? 500 : 1000,
+                  child: PageView(
+                    controller: PageController(
+                        viewportFraction: 1, initialPage: 1),
+                    scrollDirection: Axis.horizontal,
+                    pageSnapping: false,
+                    children: <Widget>[
+                      buildItemCard(
+                          title: "Volunteer Status",
+                          total: "Total:${volunteerCards.length}",
+                          color: Colors.blue,
+                          icon:Icons.volunteer_activism,
+                          onTap: () async {
+                            if(volunteerCards.isNotEmpty) {
+                              Navigator.push(context,MaterialPageRoute(builder: (builder)=>const AllVounteerScreen()));
+                            }
+                          }),
+                    ],
+                  ),
                 ),
               ),
-            ),
+              Center(
+                child: SizedBox(
+                  height: 250,
+                  width: isWeb(size) ? 500 : 1000,
+                  child: PageView(
+                    controller: PageController(
+                        viewportFraction: 1, initialPage: 1),
+                    scrollDirection: Axis.horizontal,
+                    pageSnapping: false,
+                    children: <Widget>[
+                      buildItemCard(
+                          title: "Members Status",
+                          total: "Total:${memberCards.length}",
+                          color: Colors.blue,
+                          icon:Icons.wallet_membership,
+                          onTap: () async {
+                            if(memberCards.isNotEmpty) {
+                              Navigator.push(context, MaterialPageRoute(builder: (builder)=>const AllMemberScreen()));
+                            }
+                          }),
+                    ],
+                  ),
+                ),
+              ),
 
 
-          ],
+            ],
+          ),
         ),
       ):const Center(
         child: CustomProgressIndicator(msg:"Loading....",),
       ),
     );
   }
- get getNonApprove {
-    var nonApproveMemberLst=Provider.of<AdminProvider>(context,listen: false).nonApproveMember;
-    for(int i=0; i<nonApproveMemberLst.length; i++)
-    {  var tmp=nonApproveMemberLst[i];
-       nonApproveMembersRequests.add(buildRequestsCard(title: tmp['info']['name'], text: tmp['info']['em'],  mid: tmp['id'],index: i));
-    }
-  }
-  getVolData(volsData){
-    for(var i in volsData!.docs)
-    {
-      dynamic tmp=i.data();
-      List at=[];
-      if(tmp['attendance']!=null)
+  List<Map<String,dynamic >> nonApproveMember(memberData){
+    List<Map<String,dynamic>> members=[];
+    if(memberData!=null){
+      for(var i in memberData!.docs)
       {
-        at.addAll(tmp['attendance']);
+        bool? isApprove;
+        if(i.data().containsKey('isApproved'))
+        {
+          isApprove=i.get('isApproved');
+        }
+        if(isApprove==null)
+        {
+          var tmp=i.data();
+          tmp['id']=i.id;
+          members.add(tmp);
+        }
       }
-      List donation=[];
-      if(tmp['donations']!=null)
-      {
-        donation.addAll(tmp['donations']);
-      }
-      volunteerCards.add(VolunteerCard(attendance: at, donations:  donation, info: i.get('info'),uid: i.id));
     }
-  }
-  getMemberData(membersData){
-    for(var i in membersData!.docs)
-    {
-      print(i.toString());
-      dynamic tmp=i.data();
-
-      bool? status;
-      if(tmp.containsKey('isApproved')){
-        status=i['isApproved'];
-      }
-      print(status);
-      memberCards.add(MemberCard(info: i.get('info'),uid: i.id, status: status));
-    }
+    return members;
   }
   Widget buildItemCard(
       {required String title,
@@ -316,7 +258,6 @@ class _AdminScreenState extends State<AdminScreen> {
     String? subject,
     required String text,
     required String mid,
-    required int index,
   }) {
     var size = MediaQuery.of(context).size;
     return Card(
@@ -368,11 +309,7 @@ class _AdminScreenState extends State<AdminScreen> {
                       try{
                         Provider.of<AdminProvider>(context,listen: false).setLoading=true;
                         await AdminServices.rejectReq(id: mid);
-                        await Provider.of<AdminProvider>(context,listen: false).setMemberData;
-                        nonApproveMembersRequests.removeAt(index);
-                        setState(() {
-
-                        });
+                        await Provider.of<AdminProvider>(context,listen: false).fetchMembersData;
                       }catch(e){
                         print(e.toString());
                         Fluttertoast.showToast(msg: "Something went wrong");
@@ -401,11 +338,7 @@ class _AdminScreenState extends State<AdminScreen> {
                       try{
                         Provider.of<AdminProvider>(context,listen: false).setLoading=true;
                         await AdminServices.acceptReq(id: mid);
-                        await Provider.of<AdminProvider>(context,listen: false).setMemberData;
-                        nonApproveMembersRequests.removeAt(index);
-                        setState(() {
-                          getMemberData(Provider.of<AdminProvider>(context,listen: false).getMemberData);
-                        });
+                        await Provider.of<AdminProvider>(context,listen: false).fetchMembersData;
                       }catch(e){
                         print(e.toString());
                         Fluttertoast.showToast(msg: "Something went wrong");

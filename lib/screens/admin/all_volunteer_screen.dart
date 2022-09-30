@@ -7,16 +7,16 @@ import 'package:upasthit/Models/users_models.dart';
 import 'package:upasthit/components/rounded_button.dart';
 import 'package:upasthit/components/transcation_screen.dart';
 import 'package:upasthit/models/attendance_model.dart';
+import 'package:upasthit/providers/admin_provider.dart';
 import 'package:upasthit/providers/attendance_provider.dart';
-import 'package:upasthit/screens/attendance_view_screen.dart';
+import 'package:upasthit/screens/attendace_components/attendance_view_screen.dart';
 
-import '../components/id_card.dart';
-import '../constants.dart';
+
 import 'admin_screen.dart';
 
 class AllVounteerScreen extends StatefulWidget {
-  final List<VolunteerCard> volunteers;
-  const AllVounteerScreen({Key? key, required this.volunteers}) : super(key: key);
+   
+  const AllVounteerScreen({Key? key}) : super(key: key);
 
   @override
   State<AllVounteerScreen> createState() => _AllVounteerScreenState();
@@ -27,6 +27,7 @@ class _AllVounteerScreenState extends State<AllVounteerScreen> {
   @override
   Widget build(BuildContext context) {
     var size=MediaQuery.of(context).size;
+    List<VolunteerCard> volunteers=Provider.of<AdminProvider>(context).getVolunteers;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Volunteer status",style: TextStyle(
@@ -38,10 +39,10 @@ class _AllVounteerScreenState extends State<AllVounteerScreen> {
           children: [
             ListView.builder(
                 shrinkWrap: true,
-                itemCount: widget.volunteers.length,
+                itemCount: volunteers.length,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (itemBuilder,index){
-                  var item=widget.volunteers[index];
+                  var item=volunteers[index];
                   VolModel model=VolModel();
                   model.info=item.info;
                   return Padding(

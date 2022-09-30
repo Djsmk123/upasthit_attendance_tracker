@@ -2,15 +2,11 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'package:provider/provider.dart';
-import 'package:upasthit/screens/forns/member_form.dart';
-import 'package:upasthit/screens/forns/user_form.dart';
-import 'package:upasthit/screens/memeber_screen/member_screen.dart';
+import 'package:upasthit/screens/forms/member_form.dart';
+import 'package:upasthit/screens/forms/user_form.dart';
 
 import '../../services/logins_signup_services.dart';
 import '../components/FadeAnimation.dart';
@@ -18,7 +14,6 @@ import '../components/already_have_an_account_acheck.dart';
 import '../components/rounded_button.dart';
 import '../components/rounded_input_field.dart';
 import '../constants.dart';
-
 import '../models/collection.dart';
 import '../providers/form_error.dart';
 import 'login_screen.dart';

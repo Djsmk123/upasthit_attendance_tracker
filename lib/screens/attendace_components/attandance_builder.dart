@@ -12,9 +12,9 @@ import 'package:upasthit/components/FadeAnimation.dart';
 import 'package:upasthit/components/rounded_button.dart';
 import 'package:upasthit/models/attendance_model.dart';
 
-import '../constants.dart';
-import '../providers/attendance_provider.dart';
-import '../services/firebase_services.dart';
+import '../../constants.dart';
+import '../../providers/attendance_provider.dart';
+import '../../services/firebase_services.dart';
 
 class AttendanceBuilder extends StatefulWidget {
   final String id;

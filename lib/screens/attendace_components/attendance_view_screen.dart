@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../components/rounded_button.dart';
+import '../../components/rounded_button.dart';
 import 'attandance_builder.dart';
 
 class AttendanceViewScreen extends StatefulWidget {

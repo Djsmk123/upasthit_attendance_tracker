@@ -15,9 +15,10 @@ import 'package:upasthit/components/FadeAnimation.dart';
 import 'package:upasthit/components/id_card.dart';
 import 'package:upasthit/components/rounded_button.dart';
 import 'package:upasthit/providers/attendance_provider.dart';
+import 'package:upasthit/screens/attendace_components/attandance_builder.dart';
 
 import '../../services/logins_signup_services.dart';
-import '../attandance_builder.dart';
+
 import '../welcome_screen.dart';
 
 class VolScreen extends StatefulWidget {

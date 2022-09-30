@@ -8,8 +8,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:upasthit/constants.dart';
 import 'package:upasthit/screens/choice_page.dart';
-import 'package:upasthit/screens/forns/member_form.dart';
-import 'package:upasthit/screens/forns/user_form.dart';
+import 'package:upasthit/screens/forms/member_form.dart';
+import 'package:upasthit/screens/forms/user_form.dart';
 import 'package:upasthit/screens/login_screen.dart';
 import 'package:upasthit/screens/memeber_screen/member_screen.dart';
 import 'package:upasthit/screens/signup_screen.dart';
@@ -18,7 +18,7 @@ import '../../services/logins_signup_services.dart';
 import '../components/CustomProgressIndicator.dart';
 import '../components/rounded_button.dart';
 import '../services/custom_exception_handler.dart';
-import 'admin_screen.dart';
+import 'admin/admin_screen.dart';
 
 
 class WelcomeScreen extends StatelessWidget {

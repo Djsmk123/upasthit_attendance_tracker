@@ -1,23 +1,19 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:developer';
-import 'dart:io';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:upasthit/components/rounded_button.dart';
 import 'package:upasthit/constants.dart';
 import 'package:upasthit/providers/attendance_provider.dart';
 
 import '../../Models/users_models.dart';
 import '../../components/id_card.dart';
-import '../../models/attendance_model.dart';
 import '../../services/logins_signup_services.dart';
-import '../attandance_builder.dart';
+import '../attendace_components/attandance_builder.dart';
 import '../welcome_screen.dart';
 
 /*@override

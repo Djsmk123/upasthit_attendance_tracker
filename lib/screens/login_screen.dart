@@ -10,23 +10,18 @@ import 'package:flutter/foundation.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_bounce/flutter_bounce.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
-import 'package:upasthit/models/collection.dart';
-
 import 'package:provider/provider.dart';
-
 import 'package:upasthit/components/CustomProgressIndicator.dart';
-import 'package:upasthit/screens/admin_screen.dart';
-
+import 'package:upasthit/models/collection.dart';
+import 'package:upasthit/screens/admin/admin_screen.dart';
+import 'package:upasthit/screens/forms/member_form.dart';
+import 'package:upasthit/screens/forms/user_form.dart';
 
 import '../../constants.dart';
-
 import '../../services/logins_signup_services.dart';
 import '../components/FadeAnimation.dart';
 import '../components/rounded_input_field.dart';
 import '../providers/form_error.dart';
-import 'forns/member_form.dart';
-import 'forns/user_form.dart';
 import 'memeber_screen/member_screen.dart';
 import 'user_vol_screen/VolunteerScreen.dart';
 

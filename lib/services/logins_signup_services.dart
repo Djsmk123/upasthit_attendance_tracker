@@ -90,6 +90,9 @@ class Authentication {
             'info': data['info'],
             'attendance':[
 
+            ],
+            'donations':[
+
             ]
           }).catchError((error) {
             throw Exception(error);
@@ -100,6 +103,7 @@ class Authentication {
         {
           collections.member.doc(_auth.currentUser!.uid).set({
             'info': data['info'],
+            'isApproved':null
           }).catchError((error) {
             throw Exception(error);
           });
