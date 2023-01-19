@@ -24,7 +24,6 @@ class AdminScreen extends StatefulWidget {
 }
 
 class _AdminScreenState extends State<AdminScreen> {
-
   @override
   void initState() {
     // TODO: implement initState
@@ -32,180 +31,218 @@ class _AdminScreenState extends State<AdminScreen> {
     initAsync();
   }
 
-  void initAsync()async{
-    try{
-      await Provider.of<AdminProvider>(context,listen: false).fetchMembersData;
-      await Provider.of<AdminProvider>(context,listen: false).fetchVolunteerData();
-    }catch(e){
+  void initAsync() async {
+    try {
+      await Provider.of<AdminProvider>(context, listen: false).fetchMembersData;
+      await Provider.of<AdminProvider>(context, listen: false)
+          .fetchVolunteerData();
+    } catch (e) {
       log(e.toString());
+    } finally {
+      Provider.of<AdminProvider>(context, listen: false).setLoading = false;
     }
-    finally{
-      Provider.of<AdminProvider>(context,listen:false).setLoading=false;
-    }
-
-
-
   }
+
   @override
   Widget build(BuildContext context) {
-    var size=MediaQuery.of(context).size;
-    bool isLoading=Provider.of<AdminProvider>(context).getLoadingStatus;
-    var volunteerCards=Provider.of<AdminProvider>(context).getVolunteers;
-    var memberCards=Provider.of<AdminProvider>(context).getMembers;
-    List<MemberCard> nonApprovedMember=Provider.of<AdminProvider>(context).getNonApprovedMember;
+    var size = MediaQuery.of(context).size;
+    bool isLoading = Provider.of<AdminProvider>(context).getLoadingStatus;
+    var volunteerCards = Provider.of<AdminProvider>(context).getVolunteers;
+    var memberCards = Provider.of<AdminProvider>(context).getMembers;
+    List<MemberCard> nonApprovedMember =
+        Provider.of<AdminProvider>(context).getNonApprovedMember;
 
     return Scaffold(
-      body: !isLoading?SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height:nonApprovedMember.isNotEmpty?400:150,
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade700,
-                ),
+      body: !isLoading
+          ? SafeArea(
+              child: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                      Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Container(
+                      height: nonApprovedMember.isNotEmpty ? 400 : 150,
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade700,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Admin Dashboard",style: TextStyle(
-                            color: Colors.white,
-                            fontSize: isWeb(size)?40:20,
-                            fontWeight: FontWeight.bold,
-                          ),),
-                          IconButton(onPressed: () async {
-                            Provider.of<AdminProvider>(context,listen: false).setLoading=true;
-                            await Authentication().logOut().then((value) {
-                              Navigator.popUntil(context, (route) => false);
-                              Navigator.push(
-                                  context,  MaterialPageRoute(builder: (builder)=>const WelcomeScreen()));
-                            }).catchError((error) {
-                              Fluttertoast.showToast(msg: error.toString());
-                            });
-                            Provider.of<AdminProvider>(context,listen: false).setLoading=false;
-
-                          }, icon: Icon(Icons.logout,size: isWeb(size)?40:20,color: Colors.white,))
+                          Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Admin Dashboard",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: isWeb(size) ? 40 : 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                IconButton(
+                                    onPressed: () async {
+                                      Provider.of<AdminProvider>(context,
+                                              listen: false)
+                                          .setLoading = true;
+                                      await Authentication()
+                                          .logOut()
+                                          .then((value) {
+                                        Navigator.popUntil(
+                                            context, (route) => false);
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (builder) =>
+                                                    const WelcomeScreen()));
+                                      }).catchError((error) {
+                                        Fluttertoast.showToast(
+                                            msg: error.toString());
+                                      });
+                                      Provider.of<AdminProvider>(context,
+                                              listen: false)
+                                          .setLoading = false;
+                                    },
+                                    icon: Icon(
+                                      Icons.logout,
+                                      size: isWeb(size) ? 40 : 20,
+                                      color: Colors.white,
+                                    ))
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Text(
+                              nonApprovedMember.isEmpty
+                                  ? "No pending requests for members registrations"
+                                  : "${nonApprovedMember.length} members need approval",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                          if (nonApprovedMember.isNotEmpty)
+                            Center(
+                              child: Container(
+                                margin: const EdgeInsets.only(top: 20),
+                                constraints: const BoxConstraints(
+                                  maxHeight: 220,
+                                  maxWidth: 400,
+                                ),
+                                alignment: Alignment.center,
+                                child: SingleChildScrollView(
+                                  controller:
+                                      PageController(viewportFraction: 0.9),
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                      children: nonApprovedMember
+                                          .map((e) => buildRequestsCard(
+                                              title: e.info['name'],
+                                              text: e.info['em'],
+                                              mid: e.uid))
+                                          .toList()),
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child:  Text(nonApprovedMember.isEmpty?"No pending requests for members registrations":"${nonApprovedMember.length} members need approval",style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-
-                        ),),
-                      ),
-                    if(nonApprovedMember.isNotEmpty)
+                    const SizedBox(
+                      height: 20,
+                    ),
                     Center(
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 20),
-                        constraints: const BoxConstraints(
-                          maxHeight: 220,
-                          maxWidth: 400,
-                        ),
-                        alignment: Alignment.center,
-                        child: SingleChildScrollView(
-                          controller: PageController(viewportFraction: 0.9),
+                      child: SizedBox(
+                        height: 250,
+                        width: isWeb(size) ? 500 : 1000,
+                        child: PageView(
+                          controller: PageController(
+                              viewportFraction: 1, initialPage: 1),
                           scrollDirection: Axis.horizontal,
-                          child: Row(
-                              children:nonApprovedMember.map((e) =>buildRequestsCard(title: e.info['name'], text: e.info['em'], mid: e.uid)).toList()
-                          ),
+                          pageSnapping: false,
+                          children: <Widget>[
+                            buildItemCard(
+                                title: "Volunteer Status",
+                                total: "Total:${volunteerCards.length}",
+                                color: Colors.blue,
+                                icon: Icons.volunteer_activism,
+                                onTap: () async {
+                                  if (volunteerCards.isNotEmpty) {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (builder) =>
+                                                const AllVounteerScreen()));
+                                  }
+                                }),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Center(
+                      child: SizedBox(
+                        height: 250,
+                        width: isWeb(size) ? 500 : 1000,
+                        child: PageView(
+                          controller: PageController(
+                              viewportFraction: 1, initialPage: 1),
+                          scrollDirection: Axis.horizontal,
+                          pageSnapping: false,
+                          children: <Widget>[
+                            buildItemCard(
+                                title: "Members Status",
+                                total: "Total:${memberCards.length}",
+                                color: Colors.blue,
+                                icon: Icons.wallet_membership,
+                                onTap: () async {
+                                  if (memberCards.isNotEmpty) {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (builder) =>
+                                                const AllMemberScreen()));
+                                  }
+                                }),
+                          ],
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20,),
-              Center(
-                child: SizedBox(
-                  height: 250,
-                  width: isWeb(size) ? 500 : 1000,
-                  child: PageView(
-                    controller: PageController(
-                        viewportFraction: 1, initialPage: 1),
-                    scrollDirection: Axis.horizontal,
-                    pageSnapping: false,
-                    children: <Widget>[
-                      buildItemCard(
-                          title: "Volunteer Status",
-                          total: "Total:${volunteerCards.length}",
-                          color: Colors.blue,
-                          icon:Icons.volunteer_activism,
-                          onTap: () async {
-                            if(volunteerCards.isNotEmpty) {
-                              Navigator.push(context,MaterialPageRoute(builder: (builder)=>const AllVounteerScreen()));
-                            }
-                          }),
-                    ],
-                  ),
-                ),
+            )
+          : const Center(
+              child: CustomProgressIndicator(
+                msg: "Loading....",
               ),
-              Center(
-                child: SizedBox(
-                  height: 250,
-                  width: isWeb(size) ? 500 : 1000,
-                  child: PageView(
-                    controller: PageController(
-                        viewportFraction: 1, initialPage: 1),
-                    scrollDirection: Axis.horizontal,
-                    pageSnapping: false,
-                    children: <Widget>[
-                      buildItemCard(
-                          title: "Members Status",
-                          total: "Total:${memberCards.length}",
-                          color: Colors.blue,
-                          icon:Icons.wallet_membership,
-                          onTap: () async {
-                            if(memberCards.isNotEmpty) {
-                              Navigator.push(context, MaterialPageRoute(builder: (builder)=>const AllMemberScreen()));
-                            }
-                          }),
-                    ],
-                  ),
-                ),
-              ),
-
-
-            ],
-          ),
-        ),
-      ):const Center(
-        child: CustomProgressIndicator(msg:"Loading....",),
-      ),
+            ),
     );
   }
-  List<Map<String,dynamic >> nonApproveMember(memberData){
-    List<Map<String,dynamic>> members=[];
-    if(memberData!=null){
-      for(var i in memberData!.docs)
-      {
+
+  List<Map<String, dynamic>> nonApproveMember(memberData) {
+    List<Map<String, dynamic>> members = [];
+    if (memberData != null) {
+      for (var i in memberData!.docs) {
         bool? isApprove;
-        if(i.data().containsKey('isApproved'))
-        {
-          isApprove=i.get('isApproved');
+        if (i.data().containsKey('isApproved')) {
+          isApprove = i.get('isApproved');
         }
-        if(isApprove==null)
-        {
-          var tmp=i.data();
-          tmp['id']=i.id;
+        if (isApprove == null) {
+          var tmp = i.data();
+          tmp['id'] = i.id;
           members.add(tmp);
         }
       }
     }
     return members;
   }
+
   Widget buildItemCard(
       {required String title,
-        String? total,
-        Color? color,
-        IconData? icon,
-        onTap}) {
+      String? total,
+      Color? color,
+      IconData? icon,
+      onTap}) {
     return Bounce(
       onPressed: onTap,
       duration: const Duration(milliseconds: 200),
@@ -222,15 +259,15 @@ class _AdminScreenState extends State<AdminScreen> {
             children: [
               RichText(
                   text: TextSpan(
-                    children: [
-                      WidgetSpan(
-                          child: Icon(
-                            icon,
-                            color: color,
-                            size: 40,
-                          )),
-                    ],
+                children: [
+                  WidgetSpan(
+                      child: Icon(
+                    icon,
+                    color: color,
+                    size: 40,
                   )),
+                ],
+              )),
               const SizedBox(height: 25),
               RichText(
                   text: TextSpan(
@@ -257,6 +294,7 @@ class _AdminScreenState extends State<AdminScreen> {
       ),
     );
   }
+
   Widget buildRequestsCard({
     required String title,
     String? subject,
@@ -295,7 +333,6 @@ class _AdminScreenState extends State<AdminScreen> {
                       fontSize: 14,
                     )),
               ),
-
               RichText(
                 text: TextSpan(
                     text: text,
@@ -304,24 +341,28 @@ class _AdminScreenState extends State<AdminScreen> {
                       fontSize: 14,
                     )),
               ),
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Bounce(
                     onPressed: () async {
-                      try{
-                        Provider.of<AdminProvider>(context,listen: false).setLoading=true;
+                      try {
+                        Provider.of<AdminProvider>(context, listen: false)
+                            .setLoading = true;
                         await AdminServices.rejectReq(id: mid);
-                        await Provider.of<AdminProvider>(context,listen: false).fetchMembersData;
-                      }catch(e){
+                        await Provider.of<AdminProvider>(context, listen: false)
+                            .fetchMembersData;
+                      } catch (e) {
                         log(e.toString());
                         Fluttertoast.showToast(msg: "Something went wrong");
-                      }finally{
-                        Provider.of<AdminProvider>(context,listen: false).setLoading=false;
+                      } finally {
+                        Provider.of<AdminProvider>(context, listen: false)
+                            .setLoading = false;
                       }
                     },
-
                     duration: const Duration(milliseconds: 200),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -337,21 +378,24 @@ class _AdminScreenState extends State<AdminScreen> {
                       ),
                     ),
                   ),
+                  const SizedBox(
+                    width: 20,
+                  ),
                   Bounce(
                     onPressed: () async {
-                      try{
-                        Provider.of<AdminProvider>(context,listen: false).setLoading=true;
+                      try {
+                        Provider.of<AdminProvider>(context, listen: false)
+                            .setLoading = true;
                         await AdminServices.acceptReq(id: mid);
-                        await Provider.of<AdminProvider>(context,listen: false).fetchMembersData;
-                      }catch(e){
+                        await Provider.of<AdminProvider>(context, listen: false)
+                            .fetchMembersData;
+                      } catch (e) {
                         log(e.toString());
                         Fluttertoast.showToast(msg: "Something went wrong");
-                      }finally{
-                        Provider.of<AdminProvider>(context,listen: false).setLoading=false;
+                      } finally {
+                        Provider.of<AdminProvider>(context, listen: false)
+                            .setLoading = false;
                       }
-
-
-
                     },
                     duration: const Duration(milliseconds: 200),
                     child: Container(
@@ -377,17 +421,26 @@ class _AdminScreenState extends State<AdminScreen> {
     );
   }
 }
-class VolunteerCard{
+
+class VolunteerCard {
   final List attendance;
   final List donations;
-  final Map<String,dynamic> info;
+  final Map<String, dynamic> info;
   final String uid;
-  const VolunteerCard({required this.attendance,required this.donations,required this.info,required this.uid});
+  const VolunteerCard(
+      {required this.attendance,
+      required this.donations,
+      required this.info,
+      required this.uid});
 }
 
-class MemberCard{
-  final Map<String,dynamic> info;
+class MemberCard {
+  final Map<String, dynamic> info;
   final String uid;
   final bool? status;
-  const MemberCard( {required this.info,required this.uid,required this.status,});
+  const MemberCard({
+    required this.info,
+    required this.uid,
+    required this.status,
+  });
 }
